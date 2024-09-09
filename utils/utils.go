@@ -4,27 +4,27 @@ import (
 	"math"
 )
 
-// Step 1: Calculate the mean
+// Calculate the mean of a slice of numbers and round the result
 func Mean(numbers []float64) float64 {
-	var total float64
+	sum := 0.0
 	for _, num := range numbers {
-		total += num
+		sum += num
 	}
-	return total / float64(len(numbers))
+	return math.Round(sum / float64(len(numbers)))
 }
 
-// Step 2: Calculate the variance
+// Calculate the variance of a slice of numbers and round the result
 func Variance(numbers []float64, mean float64) float64 {
 	var varianceSum float64
 	for _, num := range numbers {
 		varianceSum += (num - mean) * (num - mean)
 	}
-	return varianceSum / float64(len(numbers))
+	return math.Round(varianceSum / float64(len(numbers)))
 }
 
-// Step 3: Calculate the standard deviation
+// Calculate the standard deviation of a slice of numbers and round the result
 func StandardDev(numbers []float64) float64 {
 	mean := Mean(numbers)
 	variance := Variance(numbers, mean)
-	return math.Sqrt(variance)
+	return math.Round(math.Sqrt(variance))
 }

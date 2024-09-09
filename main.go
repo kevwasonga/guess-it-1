@@ -3,33 +3,25 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
+
+	"guess/utils" // Ensure this path is correct based on your project structure
 )
-
-// Function to calculate the mean of two numbers
-func Mean(num1, num2 float64) float64 {
-	return (num1 + num2) / 2
-}
-
-// Function to calculate the standard deviation of two numbers
-func StandardDev(num1, num2 float64) float64 {
-	mean := Mean(num1, num2)
-	variance := (math.Pow(num1-mean, 2) + math.Pow(num2-mean, 2)) / 2
-	return math.Sqrt(variance)
-}
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	var prevInput float64
-	var firstInput bool = true
+	var inputs []float64
 
-	fmt.Println("Enter floating-point numbers (one per line, type 'done' to finish):")
+	fmt.Println("Enter numbers (type 'exit' to quit):")
 
-	for scanner.Scan() {
+	for {
+		// Read input from the user
+		scanner.Scan()
 		input := scanner.Text()
-		if input == "done" {
+
+		// Exit condition
+		if input == "exit" {
 			break
 		}
 
@@ -40,26 +32,27 @@ func main() {
 			continue
 		}
 
-		if firstInput {
-			// If it's the first input, just store it and wait for the next
-			prevInput = currentInput
-			firstInput = false
-		} else {
-			// Calculate the mean and standard deviation for the range
-			mean := Mean(prevInput, currentInput)
-			stdDev := StandardDev(prevInput, currentInput)
-			
-			// Calculate the range (mean ± standard deviation)
-			lowerBound := mean - stdDev
-			upperBound := mean + stdDev
+		// Add the current input to the slice
+		inputs = append(inputs, currentInput)
 
-			// Print the current input and the range for the next input
-			fmt.Printf("%d\n", int(currentInput))
-			fmt.Printf("%d %d\n", int(lowerBound), int(upperBound))
-
-			// Update previous input
-			prevInput = currentInput
+		// If more than 10 inputs, remove the oldest one
+		if len(inputs) > 10 {
+			inputs = inputs[1:]
 		}
+
+		// Calculate the mean using the last 10 or fewer inputs
+		mean := utils.Mean(inputs)
+
+		// Calculate the standard deviation using the current inputs
+		stdDev := utils.StandardDev(inputs)
+
+		// Calculate the lower and upper bounds
+		lowerBound := mean - (2 * stdDev)
+		upperBound := mean + (2 * stdDev)
+
+		// Print the mean, standard deviation, and range
+		fmt.Printf("Mean of last %d inputs: %.2f\n", len(inputs), mean)
+		fmt.Printf("Standard Deviation: %.2f\n", stdDev)
+		fmt.Printf("Range: %.2f to %.2f\n", lowerBound, upperBound)
 	}
-	fmt.Println("Program finished.")
 }
